@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://orderdesk:orderdesk@localhost:5433/orderdesk"
     embedding_model: str = "BAAI/bge-small-en-v1.5"  # 384 dimensions, runs locally, free
 
+    # A searched match is only trusted if it's similar enough AND clearly ahead of the runner-up.
+    # Calibrate with: uv run python evals/match_confidence_report.py
+    match_min_similarity: float = 0.75
+    match_min_margin: float = 0.02
+
     erp_base_url: str = "http://localhost:8100"
     # Two keys on purpose: the agent only ever gets the read key (least privilege).
     erp_read_key: SecretStr = SecretStr("dev-read-key")

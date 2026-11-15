@@ -23,7 +23,9 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import FastAPI, Header, HTTPException, Request, Security
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
 
 # --- API models (this is the ERP's public contract) ---------------------------------------
@@ -174,15 +176,19 @@ def _keys() -> dict[str, set[Scope]]:
     }
 
 
+# Declared as a security scheme so /docs shows an "Authorize" button.
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
 def require(scope: Scope):
-    def check(x_api_key: Annotated[str | None, Header()] = None) -> None:
-        scopes = _keys().get(x_api_key or "")
+    def check(api_key: Annotated[str | None, Security(api_key_header)] = None) -> None:
+        scopes = _keys().get(api_key or "")
         if scopes is None:
             raise HTTPException(401, "missing or invalid API key")
         if scope not in scopes:
             raise HTTPException(403, f"this key lacks the '{scope}' scope")
 
-    return Depends(check)
+    return Security(check)
 
 
 # --- app -------------------------------------------------------------------------------------------
@@ -207,10 +213,12 @@ def create_app(db_path: Path | None = None, data_dir: Path | None = None) -> Fas
         if latency_ms:
             await asyncio.sleep(latency_ms / 1000)  # async sleep: don't block other requests
         if request.url.path != "/health" and random.random() < fault_rate:
-            from fastapi.responses import JSONResponse
-
             return JSONResponse({"detail": "simulated ERP outage"}, status_code=503)
         return await call_next(request)
+
+    @app.get("/", include_in_schema=False)
+    def root() -> RedirectResponse:
+        return RedirectResponse("/docs")
 
     @app.get("/health")
     def health() -> dict[str, str]:
