@@ -1,7 +1,7 @@
 [project]
 name = "orderdesk"
 version = "0.1.0"
-description = "lol"
+description = "AI order desk: turns purchase-order emails and PDFs into approved draft orders"
 readme = "README.md"
 authors = [
     { name = "Zak Ismail", email = "zak_0089@hotmail.com" }
