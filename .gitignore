@@ -11,3 +11,6 @@ wheels/
 
 # Secrets - never commit
 .env
+
+# Local LLM outputs
+scratch/out/

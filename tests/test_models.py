@@ -70,3 +70,28 @@ def test_bad_orders_rejected(change):
 def test_schema_for_llm():
     schema = ExtractedOrder.model_json_schema()
     assert "lines" in schema["properties"]
+
+
+@pytest.mark.parametrize("raw", ["None", "null", "", "  N/A "])
+def test_null_like_text_becomes_none(raw):
+    order = ExtractedOrder.model_validate({**ORDER, "notes": raw, "customer_po_number": raw})
+    assert order.notes is None
+    assert order.customer_po_number is None
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("cases", "case"),
+        ("Cases", "case"),
+        ("CTN", "case"),
+        ("boxes", "box"),
+        ("packs", "pack"),
+        ("ea.", "each"),
+        ("pack of 6", "pack of 6"),
+        (None, None),
+    ],
+)
+def test_units_are_normalised(raw, expected):
+    line = OrderLine.model_validate({**GOOD, "unit_of_measure": raw})
+    assert line.unit_of_measure == expected
