@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     max_calls_per_run: int = 50  # hard ceiling per process run
     max_cost_usd_per_run: float = 0.50  # hard ceiling per process run
 
+    database_url: str = "postgresql://orderdesk:orderdesk@localhost:5433/orderdesk"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"  # 384 dimensions, runs locally, free
+
 
 def get_settings() -> Settings:
     return Settings()

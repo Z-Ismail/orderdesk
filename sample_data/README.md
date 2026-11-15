@@ -6,7 +6,7 @@ Synthetic test data for orderdesk: a wholesale catering and janitorial supplier'
 - `products.csv`: 40 SKUs. `unit_of_measure` + `pack_size` describe how we **sell** each item
   (for example, HH-GLV-NIT-M is sold by the case of 1000 gloves = 10 boxes of 100).
   `active=false` marks a discontinued SKU that should never be matched.
-- `customer_aliases.csv`: known mappings from a customer's own wording or codes to our SKU.
+- `customer_aliases.csv`: what a specific customer calls one of our products: their own code (`customer_sku`) or their own wording (`customer_text`).
 
 ## customers/
 - `customers.csv`: 5 accounts. Note C005 (Exe Valley Care Home) is `on_hold`.

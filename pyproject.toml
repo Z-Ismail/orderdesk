@@ -10,6 +10,9 @@ requires-python = ">=3.12"
 dependencies = [
     "anthropic>=2.8.0",
     "pydantic-settings>=2.16.3",
+    "fastembed>=0.4",
+    "pgvector>=0.3",
+    "psycopg[binary]>=3.2",
     "pydantic[email]>=2.9",
     "pypdf>=5.0",
 ]
@@ -30,6 +33,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["db: needs the local Postgres from docker-compose.yml (skipped if unreachable)"]
 
 [tool.ruff]
 line-length = 100

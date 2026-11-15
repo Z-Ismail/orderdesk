@@ -1,5 +1,5 @@
-customer_id,customer_text,sku
-C002,CGH-PAP-11 Blue roll,HH-ROLL-BLU-2
-C002,CGH-GLV-02 Nitrile gloves M,HH-GLV-NIT-M
-C003,blue roll,HH-ROLL-BLU-2
-C001,GC-CUP8,HH-CUP-08W
+customer_id,customer_sku,customer_text,sku
+C001,GC-CUP8,,HH-CUP-08W
+C002,CGH-PAP-11,,HH-ROLL-BLU-2
+C002,CGH-GLV-02,,HH-GLV-NIT-M
+C003,,blue roll,HH-ROLL-BLU-2
