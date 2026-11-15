@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://orderdesk:orderdesk@localhost:5433/orderdesk"
     embedding_model: str = "BAAI/bge-small-en-v1.5"  # 384 dimensions, runs locally, free
 
+    erp_base_url: str = "http://localhost:8100"
+    # Two keys on purpose: the agent only ever gets the read key (least privilege).
+    erp_read_key: SecretStr = SecretStr("dev-read-key")
+    erp_write_key: SecretStr = SecretStr("dev-write-key")
+
 
 def get_settings() -> Settings:
     return Settings()
