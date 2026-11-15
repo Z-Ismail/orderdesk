@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from datetime import date
 from typing import Literal
+from datetime import datetime
 
 from pydantic import EmailStr, model_validator
 
@@ -45,3 +46,22 @@ class ExtractedOrder(BaseModel):
                 and self.requested_delivery_date < self.order_date):
             raise ValueError("delivery date cannot be before order date")
         return self
+
+
+class RawDocument(BaseModel):
+    """A document as it arrived: text plus metadata, before any AI touches it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    document_id: str                     # first 16 chars of the hash; short and readable
+    content_sha256: str                  # fingerprint of the raw bytes
+    source_type: Literal["pdf", "email"]
+    filename: str
+    text: str
+    page_count: int | None = None        # PDFs only
+    needs_ocr: bool = False
+    sender: str | None = None            # emails only (next step)
+    subject: str | None = None
+    received_at: datetime | None = None
+    message_id: str | None = None
+    attachments: list["RawDocument"] = Field(default_factory=list)
