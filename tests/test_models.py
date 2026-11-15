@@ -1,6 +1,8 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from pydantic import ValidationError
+
 from orderdesk.models import OrderLine
 
 GOOD = {"line_number": 1, "customer_sku": None, "description": "8oz cups",

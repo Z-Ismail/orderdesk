@@ -1,12 +1,8 @@
+from datetime import date, datetime
 from decimal import Decimal
-
-from pydantic import BaseModel, ConfigDict, Field
-
-from datetime import date
 from typing import Literal
-from datetime import datetime
 
-from pydantic import EmailStr, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 
 class OrderLine(BaseModel):
