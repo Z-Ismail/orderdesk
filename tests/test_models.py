@@ -17,3 +17,31 @@ def test_valid_line():
 def test_bad_lines_rejected(change):
     with pytest.raises(ValidationError):
         OrderLine.model_validate({**GOOD, **change})
+
+
+from orderdesk.models import ExtractedOrder
+
+ORDER = {"customer_name": "The Gull Cafe", "customer_email": "orders@thegullcafe.co.uk",
+         "order_date": "2026-11-10", "requested_delivery_date": "2026-11-13",
+         "lines": [GOOD]}
+
+def test_valid_order():
+    order = ExtractedOrder.model_validate(ORDER)
+    assert order.currency == "GBP"            # default applied
+    assert order.order_date.year == 2026      # string became a date
+
+@pytest.mark.parametrize("change", [
+    {"lines": []},
+    {"lines": [GOOD, GOOD]},                  # duplicate line numbers
+    {"requested_delivery_date": "2026-11-01"},
+    {"currency": "BTC"},
+    {"customer_email": "not-an-email"},
+    {"discount_pct": 90},
+])
+def test_bad_orders_rejected(change):
+    with pytest.raises(ValidationError):
+        ExtractedOrder.model_validate({**ORDER, **change})
+
+def test_schema_for_llm():
+    schema = ExtractedOrder.model_json_schema()
+    assert "lines" in schema["properties"]
