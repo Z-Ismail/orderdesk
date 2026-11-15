@@ -1,5 +1,13 @@
-# Local development database: Postgres 17 with the pgvector extension.
-# Start: docker compose up -d     Stop: docker compose down     Wipe data: docker compose down -v
+# Two ways to use this file:
+#
+#   Development (what you've been doing): just the database.
+#     docker compose up -d db
+#
+#   The whole system in containers, as production would run it:
+#     docker compose --profile app up --build
+#     then open http://localhost:8000
+#
+# Stop: docker compose --profile app down     Wipe data too: add -v
 services:
   db:
     image: pgvector/pgvector:pg17
@@ -15,6 +23,39 @@ services:
       test: ["CMD-SHELL", "pg_isready -U orderdesk"]
       interval: 2s
       retries: 15
+
+  erp:
+    profiles: [app]
+    build: .
+    command: uvicorn orderdesk.erp_sim.app:create_app --factory --host 0.0.0.0 --port 8100
+    environment:
+      PORT: "8100"   # tells the image's healthcheck which port to probe
+    ports:
+      - "8100:8100"
+
+  # One-off job: migrate, load the catalogue, build the demo data. Exits when done.
+  setup:
+    profiles: [app]
+    build: .
+    command: python -m orderdesk.demo seed
+    environment: &app-env
+      DATABASE_URL: postgresql://orderdesk:orderdesk@db:5432/orderdesk
+      ERP_BASE_URL: http://erp:8100
+      DEMO_MODE: "true"
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-try-orderdesk-demo}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      db: {condition: service_healthy}
+      erp: {condition: service_healthy}
+
+  web:
+    profiles: [app]
+    build: .
+    environment: *app-env
+    ports:
+      - "8000:8000"
+    depends_on:
+      setup: {condition: service_completed_successfully}
 
 volumes:
   pgdata:

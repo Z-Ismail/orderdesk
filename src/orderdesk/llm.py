@@ -68,6 +68,8 @@ class LLMClient:
         self.settings = settings
         self.recorder = recorder
         self.budget = Budget(settings.max_calls_per_run, settings.max_cost_usd_per_run)
+        if client is None and not settings.anthropic_api_key.get_secret_value():
+            raise RuntimeError("ANTHROPIC_API_KEY is not set (see .env.example)")
         self._client = client or anthropic.Anthropic(
             api_key=settings.anthropic_api_key.get_secret_value(),
             max_retries=2,  # SDK retries rate limits and server errors with backoff

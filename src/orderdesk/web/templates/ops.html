@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Operations</h1>
 <p class="sub">What the AI is costing, how fast it is, and how often humans had to correct it.</p>
+{% if demo %}<div class="flash">Demo mode makes no live LLM calls (agent results were recorded earlier), so call stats here start at zero.</div>{% endif %}
 
 {% set approved, corrected = corrections %}
 {% set total_cost = by_purpose | sum(attribute=3) %}

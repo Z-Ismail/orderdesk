@@ -63,6 +63,8 @@ def create_app(
     erp: ERPWriter | None = None,
     secure_cookies: bool | None = None,
     session_hours: int | None = None,
+    demo: dict | None = None,
+    demo_reset: Callable[[psycopg.Connection], None] | None = None,
 ) -> FastAPI:
     """Everything external is injectable so tests can run the real app against test services."""
     if connect is None or erp is None or secure_cookies is None or session_hours is None:
@@ -76,6 +78,12 @@ def create_app(
         erp = erp or HttpERPClient(settings.erp_base_url, settings.erp_write_key.get_secret_value())
         secure_cookies = settings.secure_cookies if secure_cookies is None else secure_cookies
         session_hours = session_hours or settings.session_hours
+        if demo is None and settings.demo_mode:
+            demo = {
+                "email": settings.demo_email,
+                "password": settings.demo_password.get_secret_value(),
+            }
+            demo_reset = demo_reset or _default_demo_reset(settings, erp)
         with connect() as conn:
             migrate(conn)
 
@@ -135,7 +143,7 @@ def create_app(
         return TEMPLATES.TemplateResponse(
             request,
             name,
-            {"user": user, "csrf": user.csrf_token if user else "", **context},
+            {"user": user, "csrf": user.csrf_token if user else "", "demo": demo, **context},
             status_code=status_code,
         )
 
@@ -345,6 +353,18 @@ def create_app(
         ).fetchone()
         return page(request, "_original.html", user, raw=row[0] if row else None)
 
+    # --- demo -----------------------------------------------------------------------------------
+
+    @app.post("/demo/reset")
+    async def reset_demo(request: Request, conn: DB, user: User):
+        if demo is None or demo_reset is None:
+            return Response(status_code=404)
+        check_csrf(user, (await request.form()).get("csrf"))
+        demo_reset(conn)
+        return RedirectResponse(
+            "/?done=Demo+reset:+every+order+is+back+in+the+queue", status_code=303
+        )
+
     # --- operations: what the AI is costing and how it's performing ----------------------------
 
     @app.get("/ops", response_class=HTMLResponse)
@@ -380,3 +400,24 @@ def create_app(
         )
 
     return app
+
+
+def _default_demo_reset(settings, erp) -> Callable[[psycopg.Connection], None]:
+    """Re-run the demo seed. The embedding model loads on first use, not at startup."""
+    from orderdesk.pipeline import Thresholds
+
+    state = {}
+
+    def reset(conn: psycopg.Connection) -> None:
+        from orderdesk.demo import seed
+        from orderdesk.embeddings import FastEmbedEmbedder
+
+        state.setdefault("embedder", FastEmbedEmbedder(settings.embedding_model))
+        seed(
+            conn,
+            state["embedder"],
+            erp,
+            Thresholds(settings.match_min_similarity, settings.match_min_margin),
+        )
+
+    return reset
