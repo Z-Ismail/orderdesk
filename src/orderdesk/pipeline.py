@@ -105,7 +105,9 @@ class Pipeline:
             return Outcome(doc.document_id, doc.filename, "failed", [type(exc).__name__])
 
     def build_proposal(self, doc: RawDocument, order: ExtractedOrder) -> OrderProposal:
-        customer = identify_customer(self.conn, order.customer_email or doc.sender)
+        customer = identify_customer(
+            self.conn, order.customer_email or doc.sender, order.customer_name
+        )
         issues = self._order_issues(doc, order, customer)
         lines = []
         for order_line in order.lines:
@@ -140,6 +142,13 @@ class Pipeline:
                 )
             )
             return issues
+        if customer.matched_by == "name":
+            issues.append(
+                Issue(
+                    code="customer_matched_by_name",
+                    message=f"Identified as {customer.name} by name only; no matching email address.",
+                )
+            )
         if customer.account_status != "active":
             issues.append(
                 Issue(

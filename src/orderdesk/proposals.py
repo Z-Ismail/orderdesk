@@ -11,6 +11,7 @@ from orderdesk.models import ExtractedOrder
 IssueCode = Literal[
     "unknown_customer",  # sender doesn't match any customer account
     "customer_on_hold",  # account exists but is not allowed to order
+    "customer_matched_by_name",  # no email match; identified by company name only (weaker)
     "amendment",  # changes an earlier order instead of placing a new one
     "possible_duplicate",  # same customer + PO number already seen (retyped re-send)
     "no_match",  # nothing in the catalogue looks like this line

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     extraction_model: str = "claude-haiku-5-5"
     vision_model: str = "claude-haiku-5-5"  # used when a document is a scan
+    agent_model: str = "claude-sonnet-5-5"  # investigation needs stronger reasoning
+    agent_max_steps: int = 8  # hard ceiling on tool-calling rounds per investigation
     max_output_tokens: int = 2000  # hard ceiling per call
     max_calls_per_run: int = 50  # hard ceiling per process run
     max_cost_usd_per_run: float = 0.50  # hard ceiling per process run

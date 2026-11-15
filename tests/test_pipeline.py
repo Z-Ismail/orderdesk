@@ -134,3 +134,13 @@ def test_strict_thresholds_flag_searched_matches(pipeline):
     pipeline.thresholds = Thresholds(min_similarity=0.999, min_margin=0.5)
     outcome = run(pipeline, "email_004_harbourside_kitchen.eml")  # no aliases, all searched
     assert "low_match_confidence" in outcome.issues
+
+
+def test_scan_without_email_is_identified_by_name_and_flagged(pipeline):
+    def no_email(doc):
+        return golden_extractor(doc).model_copy(update={"customer_email": None})
+
+    pipeline.extract = no_email
+    outcome = run(pipeline, "po_1005_exe_valley_scanned.pdf")
+    assert "customer_on_hold" in outcome.issues  # the real problem is now visible
+    assert "customer_matched_by_name" in outcome.issues  # and the weaker evidence is flagged

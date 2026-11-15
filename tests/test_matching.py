@@ -87,3 +87,18 @@ def test_returns_at_most_limit_candidates(conn, embedder):
 def test_keyword_query_is_safe_with_punctuation():
     assert keyword_query("Napkins 40cm (3-ply) & black!") == "napkins | 40cm | 3 | ply | black"
     assert keyword_query("!!!") == ""
+
+
+def test_identify_customer_falls_back_to_name(conn):
+    customer = identify_customer(conn, None, "exe valley care home")
+    assert (customer.customer_id, customer.matched_by) == ("C005", "name")
+
+
+def test_name_fallback_ignores_punctuation_and_company_suffixes(conn):
+    customer = identify_customer(conn, None, "The Gull Café Ltd.")
+    assert customer.customer_id == "C001"
+
+
+def test_email_beats_name(conn):
+    customer = identify_customer(conn, "orders@thegullcafe.co.uk", "Clifton Grand Hotel")
+    assert (customer.customer_id, customer.matched_by) == ("C001", "email")
