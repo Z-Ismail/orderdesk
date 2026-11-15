@@ -75,10 +75,16 @@ def load_catalogue(conn: psycopg.Connection, embedder: Embedder, data_dir: Path)
             ),
         )
 
-    # Aliases are small and fully described by the file, so replace them wholesale.
+    # The file fully describes the catalogue aliases, so replace those wholesale. Aliases that
+    # reviewers taught the system ('learned') survive a reload, unless the file now says otherwise.
     aliases = _read(data_dir / "customers" / "customer_aliases.csv")
-    conn.execute("DELETE FROM customer_aliases")
+    conn.execute("DELETE FROM customer_aliases WHERE source = 'catalogue'")
     for a in aliases:
+        conn.execute(
+            "DELETE FROM customer_aliases WHERE customer_id = %s AND "
+            "(lower(customer_sku) = lower(%s) OR lower(customer_text) = lower(%s))",
+            (a["customer_id"], a["customer_sku"] or "", a["customer_text"] or ""),
+        )
         conn.execute(
             "INSERT INTO customer_aliases (customer_id, customer_sku, customer_text, sku) "
             "VALUES (%s, %s, %s, %s)",

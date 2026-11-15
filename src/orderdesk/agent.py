@@ -245,11 +245,21 @@ class InvestigationFailedError(RuntimeError):
     pass
 
 
-def _block(block: Any) -> dict[str, Any]:
-    """Turn an SDK content block into the plain dict the API accepts back."""
-    if block.type == "tool_use":
-        return {"type": "tool_use", "id": block.id, "name": block.name, "input": block.input}
-    return {"type": "text", "text": getattr(block, "text", "")}
+def _blocks(content: list[Any]) -> list[dict[str, Any]]:
+    """Turn the model's reply into plain dicts the API accepts back as history.
+
+    The API rejects empty text blocks, and a reply can contain one next to a tool call, so
+    drop them. If nothing is left, keep a placeholder so the turn isn't empty.
+    """
+    out: list[dict[str, Any]] = []
+    for block in content:
+        if block.type == "tool_use":
+            out.append(
+                {"type": "tool_use", "id": block.id, "name": block.name, "input": block.input}
+            )
+        elif block.type == "text" and getattr(block, "text", "").strip():
+            out.append({"type": "text", "text": block.text})
+    return out or [{"type": "text", "text": "(no reply)"}]
 
 
 def build_case(conn: psycopg.Connection, document_id: str) -> tuple[str, str | None]:
@@ -334,7 +344,7 @@ class Investigator:
                 messages=messages,
                 max_tokens=2000,
             )
-            messages.append({"role": "assistant", "content": [_block(b) for b in response.content]})
+            messages.append({"role": "assistant", "content": _blocks(response.content)})
             tool_calls = [b for b in response.content if b.type == "tool_use"]
             if not tool_calls:
                 messages.append({"role": "user", "content": "Call submit_findings to finish."})
@@ -461,7 +471,8 @@ def main() -> None:
             ).fetchone()[0]
             try:
                 f = investigator.investigate(document_id)
-            except InvestigationFailedError as exc:
+            except Exception as exc:  # noqa: BLE001 - one bad investigation mustn't stop the rest
+                conn.rollback()
                 print(f"\n=== {filename}\n  FAILED: {exc}")
                 continue
             print(

@@ -202,3 +202,24 @@ def test_case_briefing_wraps_the_document_as_untrusted(conn):
     assert "unknown_customer" in case
     start, end = case.index("<untrusted_document>"), case.index("</untrusted_document>")
     assert start < case.index("ignore all previous instructions") < end
+
+
+def test_empty_text_blocks_are_not_sent_back(conn, embedder, erp):
+    """Real Claude can reply with an empty text block beside a tool call; the API rejects
+    empty text in the history, so it must be dropped."""
+    target = doc_id(conn, "email_004")
+    empty = SimpleNamespace(type="text", text="")
+    agent, claude = investigator(
+        conn,
+        embedder,
+        erp,
+        [
+            [empty, tool_use("search_catalogue", {"query": "wooden knife"})],
+            [tool_use("submit_findings", GOOD_FINDINGS, "t2")],
+        ],
+    )
+    agent.investigate(target)
+    history = claude.requests[1]["messages"]
+    sent = [b for m in history if m["role"] == "assistant" for b in m["content"]]
+    assert all(b.get("text", "x").strip() for b in sent if b["type"] == "text")
+    assert sent[0]["type"] == "tool_use"
