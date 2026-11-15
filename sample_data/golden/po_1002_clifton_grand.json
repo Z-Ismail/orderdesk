@@ -1,0 +1,61 @@
+{
+  "customer_name": "Clifton Grand Hotel",
+  "customer_email": "purchasing@cliftongrand.co.uk",
+  "customer_po_number": "CGH-PO-88341",
+  "order_date": "2026-11-09",
+  "requested_delivery_date": "2026-11-16",
+  "delivery_address": "Goods In, Clifton Grand Hotel, Princess Victoria Street, Bristol BS8 4BX",
+  "notes": "Please call Goods In before delivery: 0117 496 0123.",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": "CGH-PAP-11",
+      "description": "Blue roll 2ply centrefeed",
+      "quantity": 4,
+      "unit_of_measure": "pack of 6",
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": "CGH-GLV-02",
+      "description": "Nitrile gloves M, powder free, blue",
+      "quantity": 3,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 3,
+      "customer_sku": "CGH-BIN-07",
+      "description": "Black sacks 90ltr heavy",
+      "quantity": 5,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 4,
+      "customer_sku": "CGH-CUP-12",
+      "description": "12oz takeaway cups double wall",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 5,
+      "customer_sku": "CGH-CHM-03",
+      "description": "Glasswasher rinse aid 20L",
+      "quantity": 1,
+      "unit_of_measure": "each",
+      "unit_price": null
+    },
+    {
+      "line_number": 6,
+      "customer_sku": "CGH-NAP-09",
+      "description": "Napkins 40cm 3 ply black",
+      "quantity": 2000,
+      "unit_of_measure": "each",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false
+}

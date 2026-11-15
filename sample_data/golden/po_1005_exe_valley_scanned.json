@@ -1,0 +1,45 @@
+{
+  "customer_name": "Exe Valley Care Home",
+  "customer_email": "admin@exevalleycare.org.uk",
+  "customer_po_number": "EVC-1187",
+  "order_date": "2026-11-12",
+  "requested_delivery_date": null,
+  "delivery_address": "Cowley Bridge Road, Exeter EX4 5AD",
+  "notes": "Please deliver ASAP",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": null,
+      "description": "Antibacterial hand soap 5L",
+      "quantity": 6,
+      "unit_of_measure": null,
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": null,
+      "description": "mini jumbo toilet rolls",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 3,
+      "customer_sku": null,
+      "description": "disposable aprons white",
+      "quantity": 5,
+      "unit_of_measure": "roll",
+      "unit_price": null
+    },
+    {
+      "line_number": 4,
+      "customer_sku": null,
+      "description": "clear vinyl gloves medium",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false
+}

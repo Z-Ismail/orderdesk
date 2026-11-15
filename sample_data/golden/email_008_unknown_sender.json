@@ -1,0 +1,29 @@
+{
+  "customer_name": null,
+  "customer_email": "procurement@quickbuy-trading.biz",
+  "customer_po_number": null,
+  "order_date": "2026-11-12",
+  "requested_delivery_date": null,
+  "delivery_address": "Unit 44B, Docks Industrial Estate, Newport NP20 2XX",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": null,
+      "description": "12oz double wall cups",
+      "quantity": 50,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": null,
+      "description": "nitrile gloves large",
+      "quantity": 40,
+      "unit_of_measure": "case",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false,
+  "notes": null
+}

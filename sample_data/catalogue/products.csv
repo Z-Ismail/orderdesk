@@ -1,0 +1,41 @@
+sku,name,description,category,unit_of_measure,pack_size,list_price_gbp,active
+HH-CUP-08W,8oz white paper hot cup,Single-wall white paper hot drink cup 8oz (227ml),Cups,case,1000,42.00,true
+HH-CUP-12W,12oz white paper hot cup,Single-wall white paper hot drink cup 12oz (340ml),Cups,case,1000,51.00,true
+HH-CUP-09C,9oz clear plastic cold cup,Clear PET cold drink cup 9oz (266ml) for water and juice,Cups,case,1000,38.50,true
+HH-CUP-12DW,12oz double-wall kraft hot cup,Double-wall kraft paper hot cup 12oz insulated,Cups,case,500,47.00,true
+HH-LID-08W,8oz white sip lid,White sip-through lid fits 8oz paper hot cups,Lids,case,1000,24.00,true
+HH-LID-12W,12oz white sip lid,White sip-through lid fits 12oz paper hot cups,Lids,case,1000,27.00,true
+HH-NAP-2W,2-ply white dinner napkin 40cm,White 2-ply paper dinner napkin 40cm 4-fold,Napkins,case,2000,31.00,true
+HH-NAP-3B,3-ply black dinner napkin 40cm,Black 3-ply paper dinner napkin 40cm 4-fold,Napkins,case,1000,36.00,true
+HH-GLV-NIT-S,Blue nitrile gloves small,Powder-free blue nitrile disposable gloves size small box of 100,Gloves,case,1000,58.00,true
+HH-GLV-NIT-M,Blue nitrile gloves medium,Powder-free blue nitrile disposable gloves size medium box of 100,Gloves,case,1000,58.00,true
+HH-GLV-NIT-L,Blue nitrile gloves large,Powder-free blue nitrile disposable gloves size large box of 100,Gloves,case,1000,58.00,true
+HH-GLV-VIN-M,Clear vinyl gloves medium,Powdered clear vinyl disposable gloves size medium box of 100,Gloves,case,1000,29.00,true
+HH-BIN-BLK-90,Black refuse sack 90L heavy duty,Heavy duty black bin liner refuse sack 90 litre 18x29x39in,Bin liners,case,200,22.50,true
+HH-BIN-CLR-90,Clear refuse sack 90L,Clear bin liner refuse sack 90 litre for recycling,Bin liners,case,200,24.00,true
+HH-BIN-WHT-10,White pedal bin liner 10L,Small white pedal bin liner 10 litre,Bin liners,case,1000,14.00,true
+HH-ROLL-BLU-2,Blue centrefeed roll 2-ply,Blue 2-ply centrefeed wiping roll 150m (blue roll),Paper rolls,pack,6,19.80,true
+HH-ROLL-WHT-2,White centrefeed roll 2-ply,White 2-ply centrefeed wiping roll 150m,Paper rolls,pack,6,21.00,true
+HH-TP-2W,2-ply toilet roll 200 sheet,White 2-ply toilet tissue roll 200 sheets,Paper rolls,case,36,17.50,true
+HH-TP-JUMBO,Mini jumbo toilet roll 2-ply,Mini jumbo 2-ply toilet roll 200m for dispensers,Paper rolls,case,12,23.00,true
+HH-HT-CF-W,C-fold hand towel white 2-ply,White 2-ply C-fold paper hand towel,Paper rolls,case,2400,26.00,true
+HH-FOIL-450,Catering foil 450mm x 75m,Aluminium catering foil roll 450mm x 75m,Food wrap,each,1,18.00,true
+HH-CLING-450,Cling film 450mm x 300m,PVC catering cling film roll 450mm x 300m with cutter box,Food wrap,each,1,12.50,true
+HH-BOX-KR-1,Kraft food box no.1,Kraft paper takeaway food box no.1 (700ml),Food containers,case,450,39.00,true
+HH-BOX-KR-8,Kraft food box no.8,Kraft paper takeaway food box no.8 (1300ml),Food containers,case,300,44.00,true
+HH-CON-650,650ml rectangular microwave container with lid,Black PP microwave container 650ml with clear lid,Food containers,case,250,33.00,true
+HH-CUT-WD-F,Wooden fork,Disposable birch wood fork 160mm,Cutlery,case,1000,16.00,true
+HH-CUT-WD-K,Wooden knife,Disposable birch wood knife 165mm,Cutlery,case,1000,16.00,true
+HH-STR-PAP,Paper straw black 6mm,Black paper drinking straw 6mm x 200mm wrapped,Cutlery,case,2500,21.00,true
+HH-CHM-SAN-5,Food-safe sanitiser 5L,Food-safe surface sanitiser spray concentrate 5 litre,Chemicals,each,1,14.75,true
+HH-CHM-DEG-5,Heavy duty degreaser 5L,Kitchen heavy duty degreaser 5 litre,Chemicals,each,1,16.25,true
+HH-CHM-WUL-5,Washing up liquid 5L,Concentrated washing up liquid 5 litre,Chemicals,each,1,9.90,true
+HH-CHM-DWD-20,Dishwasher detergent 20L,Commercial dishwasher detergent 20 litre,Chemicals,each,1,38.00,true
+HH-CHM-RA-20,Rinse aid 20L,Commercial dishwasher rinse aid 20 litre,Chemicals,each,1,41.00,true
+HH-CHM-BLE-5,Thick bleach 5L,Thick bleach 5 litre,Chemicals,each,1,6.80,true
+HH-CHM-HSO-5,Antibacterial hand soap 5L,Antibacterial liquid hand soap 5 litre refill,Chemicals,each,1,11.40,true
+HH-CLN-CLO-B,Blue cleaning cloth,Blue all-purpose cleaning cloth colour-coded pack of 50,Cleaning,pack,50,8.50,true
+HH-CLN-CLO-R,Red cleaning cloth,Red all-purpose cleaning cloth colour-coded pack of 50,Cleaning,pack,50,8.50,true
+HH-CLN-SCR,Green scourer pad,Green scouring pad 230x150mm pack of 10,Cleaning,pack,10,5.20,true
+HH-APR-WHT,White polythene apron,Disposable white polythene apron on roll of 200,Clothing,each,200,7.90,true
+HH-CUP-08K,8oz kraft paper hot cup (discontinued),Single-wall kraft hot cup 8oz,Cups,case,1000,40.00,false

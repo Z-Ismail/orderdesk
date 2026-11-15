@@ -1,0 +1,45 @@
+{
+  "customer_name": "Redland Primary School",
+  "customer_email": "office@redlandprimary.bristol.sch.uk",
+  "customer_po_number": null,
+  "order_date": "2026-11-11",
+  "requested_delivery_date": "2026-11-18",
+  "delivery_address": null,
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": null,
+      "description": "blue roll",
+      "quantity": 6,
+      "unit_of_measure": "pack",
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": null,
+      "description": "9oz clear cups",
+      "quantity": 3,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 3,
+      "customer_sku": null,
+      "description": "5L thick bleach",
+      "quantity": 2,
+      "unit_of_measure": "each",
+      "unit_price": null
+    },
+    {
+      "line_number": 4,
+      "customer_sku": null,
+      "description": "medium vinyl gloves (the clear ones)",
+      "quantity": 1,
+      "unit_of_measure": "box",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false,
+  "notes": null
+}

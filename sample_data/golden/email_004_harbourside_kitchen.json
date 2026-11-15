@@ -1,0 +1,61 @@
+{
+  "customer_name": "Harbourside Kitchen",
+  "customer_email": "chef@harboursidekitchen.com",
+  "customer_po_number": "HK-2026-311",
+  "order_date": "2026-11-11",
+  "requested_delivery_date": "2026-11-13",
+  "delivery_address": "3 Canons Road, Bristol BS1 5UH",
+  "notes": "Deliver Thursday morning before 10am if possible.",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": null,
+      "description": "Kraft box No.1",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": null,
+      "description": "Kraft box No.8",
+      "quantity": 1,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 3,
+      "customer_sku": null,
+      "description": "Wooden forks",
+      "quantity": 1,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 4,
+      "customer_sku": null,
+      "description": "Wooden knives",
+      "quantity": 1,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 5,
+      "customer_sku": null,
+      "description": "Heavy duty degreaser 5L",
+      "quantity": 2,
+      "unit_of_measure": "each",
+      "unit_price": null
+    },
+    {
+      "line_number": 6,
+      "customer_sku": null,
+      "description": "Black paper straws",
+      "quantity": 1,
+      "unit_of_measure": "case",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false
+}

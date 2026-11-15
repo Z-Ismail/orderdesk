@@ -1,0 +1,29 @@
+{
+  "customer_name": "Clifton Grand Hotel",
+  "customer_email": "purchasing@cliftongrand.co.uk",
+  "customer_po_number": "CGH-PO-88341",
+  "order_date": "2026-11-12",
+  "requested_delivery_date": null,
+  "delivery_address": null,
+  "is_amendment": true,
+  "notes": "Amendment: change nitrile gloves from medium to large; add clear 90 litre sacks. Everything else unchanged.",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": null,
+      "description": "nitrile gloves large",
+      "quantity": 3,
+      "unit_of_measure": "case",
+      "unit_price": null
+    },
+    {
+      "line_number": 2,
+      "customer_sku": null,
+      "description": "clear 90 litre sacks",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": null
+    }
+  ],
+  "currency": "GBP"
+}

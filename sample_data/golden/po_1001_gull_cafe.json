@@ -1,0 +1,45 @@
+{
+  "customer_name": "The Gull Cafe",
+  "customer_email": "orders@thegullcafe.co.uk",
+  "customer_po_number": "GC-24117",
+  "order_date": "2026-11-10",
+  "requested_delivery_date": "2026-11-13",
+  "delivery_address": "12 Harbourside Walk, Bristol BS1 5TY",
+  "notes": "Deliver to the rear entrance.",
+  "lines": [
+    {
+      "line_number": 1,
+      "customer_sku": "HH-CUP-08W",
+      "description": "8oz white paper hot cup",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": "42.00"
+    },
+    {
+      "line_number": 2,
+      "customer_sku": "HH-LID-08W",
+      "description": "8oz white sip lid",
+      "quantity": 2,
+      "unit_of_measure": "case",
+      "unit_price": "24.00"
+    },
+    {
+      "line_number": 3,
+      "customer_sku": "HH-NAP-2W",
+      "description": "2-ply white dinner napkin 40cm",
+      "quantity": 1,
+      "unit_of_measure": "case",
+      "unit_price": "31.00"
+    },
+    {
+      "line_number": 4,
+      "customer_sku": "HH-CHM-SAN-5",
+      "description": "Food-safe sanitiser 5L",
+      "quantity": 4,
+      "unit_of_measure": "each",
+      "unit_price": "14.75"
+    }
+  ],
+  "currency": "GBP",
+  "is_amendment": false
+}

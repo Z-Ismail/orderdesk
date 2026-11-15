@@ -1,0 +1,6 @@
+customer_id,name,email_domain,contact_email,price_tier,account_status,default_delivery_address
+C001,The Gull Cafe,thegullcafe.co.uk,orders@thegullcafe.co.uk,standard,active,"12 Harbourside Walk, Bristol BS1 5TY"
+C002,Clifton Grand Hotel,cliftongrand.co.uk,purchasing@cliftongrand.co.uk,gold,active,"Goods In, Clifton Grand Hotel, Princess Victoria Street, Bristol BS8 4BX"
+C003,Redland Primary School,redlandprimary.bristol.sch.uk,office@redlandprimary.bristol.sch.uk,education,active,"Redland Primary School, Lansdown Road, Bristol BS6 6NS"
+C004,Harbourside Kitchen,harboursidekitchen.com,chef@harboursidekitchen.com,standard,active,"3 Canons Road, Bristol BS1 5UH"
+C005,Exe Valley Care Home,exevalleycare.org.uk,admin@exevalleycare.org.uk,standard,on_hold,"Exe Valley Care Home, Cowley Bridge Road, Exeter EX4 5AD"
