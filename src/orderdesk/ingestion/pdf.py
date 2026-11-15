@@ -6,7 +6,7 @@ from pypdf import PdfReader
 
 from orderdesk.models import RawDocument
 
-MIN_CHARS_PER_PAGE = 50   # below this we assume a scan with no text layer
+MIN_CHARS_PER_PAGE = 50  # below this we assume a scan with no text layer
 
 
 def pdf_from_bytes(data: bytes, filename: str) -> RawDocument:

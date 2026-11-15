@@ -37,7 +37,10 @@ def test_hidden_files_are_ignored(tmp_path):
 def test_cli_summary():
     result = subprocess.run(
         [sys.executable, "-m", "orderdesk.ingest", str(INBOX)],
-        check=False, capture_output=True, text=True, timeout=60,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=60,
     )
     assert result.returncode == 0, result.stderr
     last = result.stdout.strip().splitlines()[-1]

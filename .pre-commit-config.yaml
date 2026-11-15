@@ -1,0 +1,12 @@
+# Runs before every commit. Install once with: uv run pre-commit install
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0          # run `uv run pre-commit autoupdate` to move to the latest
+    hooks:
+      - id: gitleaks      # blocks the commit if it finds an API key or other secret
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.5
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format

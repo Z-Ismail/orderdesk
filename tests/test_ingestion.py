@@ -24,6 +24,7 @@ def test_hash_is_deterministic():
     b = load_pdf(INBOX / "po_1002_clifton_grand.pdf")
     assert a.content_sha256 == b.content_sha256
 
+
 def test_plain_email():
     doc = load_email(INBOX / "email_003_redland_primary.eml")
     assert doc.source_type == "email"

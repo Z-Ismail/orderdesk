@@ -17,6 +17,7 @@ class OrderLine(BaseModel):
     unit_of_measure: str | None = None
     unit_price: Decimal | None = Field(default=None, ge=0)
 
+
 class ExtractedOrder(BaseModel):
     """What the LLM must produce from a PO document. Nothing else gets through."""
 
@@ -38,8 +39,11 @@ class ExtractedOrder(BaseModel):
         numbers = [line.line_number for line in self.lines]
         if len(numbers) != len(set(numbers)):
             raise ValueError("line numbers must be unique")
-        if (self.order_date and self.requested_delivery_date
-                and self.requested_delivery_date < self.order_date):
+        if (
+            self.order_date
+            and self.requested_delivery_date
+            and self.requested_delivery_date < self.order_date
+        ):
             raise ValueError("delivery date cannot be before order date")
         return self
 
@@ -49,14 +53,14 @@ class RawDocument(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    document_id: str                     # first 16 chars of the hash; short and readable
-    content_sha256: str                  # fingerprint of the raw bytes
+    document_id: str  # first 16 chars of the hash; short and readable
+    content_sha256: str  # fingerprint of the raw bytes
     source_type: Literal["pdf", "email"]
     filename: str
     text: str
-    page_count: int | None = None        # PDFs only
+    page_count: int | None = None  # PDFs only
     needs_ocr: bool = False
-    sender: str | None = None            # emails only (next step)
+    sender: str | None = None  # emails only (next step)
     subject: str | None = None
     received_at: datetime | None = None
     message_id: str | None = None
