@@ -1,0 +1,19 @@
+<table class="card" style="background:#fff">
+  <thead><tr><th>When</th><th>Who</th><th>Event</th><th>Detail</th></tr></thead>
+  <tbody>
+  {% for at, actor, event, detail in events %}
+    <tr><td class="small">{{ at.strftime("%d %b %H:%M:%S") }}</td><td class="small">{{ actor }}</td>
+        <td><b>{{ event | replace("_", " ") }}</b></td><td class="code">{{ detail | tojson }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if investigation %}
+  {% set transcript, steps, cost, model = investigation %}
+  <h2>Agent trace · {{ steps }} steps · ${{ "%.4f" | format(cost) }} · {{ model }}</h2>
+  {% for step in transcript %}
+    <div style="margin-bottom:10px"><b class="mono">{{ step.tool }}</b>
+      <span class="mono small">{{ step.input | tojson }}</span>
+      {% if step.output %}<pre style="max-height:160px">{{ step.output | tojson(indent=2) }}</pre>{% endif %}
+    </div>
+  {% endfor %}
+{% endif %}

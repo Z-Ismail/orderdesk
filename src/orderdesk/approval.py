@@ -38,6 +38,7 @@ class ReviewLine(BaseModel):
     customer_sku: str | None
     customer_quantity: Decimal
     customer_unit: str | None
+    matched_sku: str | None  # what catalogue search picked, before any agent or human
     sku: str | None  # suggested: the agent's pick if it investigated, else the match
     quantity: int | None  # suggested, in our selling unit
     unit_price: Decimal | None
@@ -123,6 +124,7 @@ class ApprovalService:
                     customer_sku=ln["customer_sku"],
                     customer_quantity=ln["quantity"],
                     customer_unit=ln["customer_unit"],
+                    matched_sku=ln["chosen_sku"],
                     sku=sku,
                     quantity=qty,
                     unit_price=ln["unit_price"],
@@ -194,7 +196,7 @@ class ApprovalService:
                 draft.order_total,
             ),
         )
-        self._learn_aliases(item, corrections)
+        learned = self._learn_aliases(item, final)
         self._set_status(document_id, "approved")
         self._audit(
             document_id,
@@ -204,6 +206,7 @@ class ApprovalService:
                 "erp_order_id": draft.order_id,
                 "order_total": str(draft.order_total),
                 "corrections": len(corrections),
+                "aliases_learned": learned,
             },
         )
         self.conn.commit()
@@ -271,12 +274,20 @@ class ApprovalService:
         changes += [{"line_number": n, "removed": True} for n in suggested if n not in kept]
         return changes
 
-    def _learn_aliases(self, item: ReviewItem, corrections: list[dict]) -> None:
-        """A reviewer changing the product is the system being taught: remember it."""
-        for c in corrections:
-            if c.get("removed") or c["suggested_sku"] == c["final_sku"]:
+    def _learn_aliases(self, item: ReviewItem, final: list[FinalLine]) -> int:
+        """Teach matching from approved decisions.
+
+        Whenever the approved product differs from what catalogue search picked, remember the
+        customer's wording -> our SKU. It doesn't matter whether the agent or the human made
+        the fix: a human approved it, so it's trustworthy. Returns how many were learned.
+        """
+        original = {ln.line_number: ln for ln in item.lines}
+        learned = 0
+        for ln in final:
+            o = original.get(ln.line_number)
+            if o is None or o.matched_sku == ln.sku:
                 continue
-            code, text = c["customer_sku"], c["description"]
+            code, text = o.customer_sku, o.description
             self.conn.execute(
                 "DELETE FROM customer_aliases WHERE customer_id = %s AND "
                 "(lower(customer_sku) = lower(%s) OR lower(customer_text) = lower(%s))",
@@ -285,8 +296,10 @@ class ApprovalService:
             self.conn.execute(
                 "INSERT INTO customer_aliases (customer_id, customer_sku, customer_text, sku, "
                 "source) VALUES (%s, %s, %s, %s, 'learned')",
-                (item.customer_id, code, None if code else text, c["final_sku"]),
+                (item.customer_id, code, None if code else text, ln.sku),
             )
+            learned += 1
+        return learned
 
     def _set_status(self, document_id: str, status: str) -> None:
         self.conn.execute(

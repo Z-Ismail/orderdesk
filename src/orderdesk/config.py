@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     match_min_similarity: float = 0.75
     match_min_margin: float = 0.02
 
+    # Until real login arrives (milestone 7), the web UI records decisions under this name.
+    reviewer_email: str = "reviewer@orderdesk.local"
+
     erp_base_url: str = "http://localhost:8100"
     # Two keys on purpose: the agent only ever gets the read key (least privilege).
     erp_read_key: SecretStr = SecretStr("dev-read-key")

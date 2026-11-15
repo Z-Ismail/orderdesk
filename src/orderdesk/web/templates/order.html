@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ item.customer_name or "Unknown sender" }} · orderdesk{% endblock %}
+{% block content %}
+{% set label, tone = status_label(item.status) %}
+<p class="small"><a href="/">← All orders</a></p>
+<h1>{{ item.customer_name or "Unknown sender" }} <span class="badge {{ tone }}">{{ label }}</span></h1>
+<p class="sub">PO <span class="mono">{{ item.customer_po_number or "–" }}</span> · {{ item.filename }}
+  · <a href="#" hx-get="/orders/{{ item.document_id }}/original" hx-target="#original" hx-swap="innerHTML">view original</a></p>
+<div id="original"></div>
+
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+{% if item.issues %}
+<div class="card" style="padding:12px 16px; margin-bottom:16px">
+  <ul class="issues">
+  {% for issue in item.issues %}
+    <li><code>{{ issue.code }}</code>{% if issue.line_number %}<b>Line {{ issue.line_number }}:</b> {% endif %}{{ issue.message }}</li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if item.agent_action %}
+<div class="agent">
+  <b>Investigator recommends: {{ item.agent_action | replace("_", " ") }}</b>
+  {% for flag in item.agent_risk_flags %}<span class="badge bad" style="margin-left:6px">{{ flag | replace("_", " ") }}</span>{% endfor %}
+  <div style="margin-top:6px">{{ item.agent_summary }}</div>
+</div>
+{% endif %}
+
+{% if decision %}
+  {% set d, by, reason, erp_id, total, at = decision %}
+  <div class="card" style="padding:16px">
+    <b>{{ d | capitalize }}</b> by {{ by }} on {{ at.strftime("%d %b %Y at %H:%M") }}.
+    {% if erp_id %} ERP draft order <span class="mono">{{ erp_id }}</span>, total £{{ total }}.{% endif %}
+    {% if reason %}<div class="muted">Reason: {{ reason }}</div>{% endif %}
+  </div>
+{% else %}
+<form method="post" action="/orders/{{ item.document_id }}/approve" class="card">
+  <table>
+    <thead><tr><th>#</th><th style="width:30%">Customer wrote</th><th style="width:34%">We'll send (SKU)</th><th>Qty</th><th>Remove</th></tr></thead>
+    <tbody>
+    {% for ln in item.lines %}
+      <tr>
+        <td class="muted">{{ ln.line_number }}</td>
+        <td>{{ ln.customer_quantity | float | round(2) | string | replace(".0", "") }} {{ ln.customer_unit or "" }} × {{ ln.description }}
+          {% if ln.customer_sku %}<div class="small muted mono">their code {{ ln.customer_sku }}</div>{% endif %}
+          {% if ln.agent_reasoning %}<div class="small" style="margin-top:6px; color:#3d4a66">🔎 {{ ln.agent_reasoning }}</div>{% endif %}
+        </td>
+        <td>
+          <input type="text" name="sku_{{ ln.line_number }}" value="{{ ln.sku or '' }}" list="opts_{{ ln.line_number }}"
+                 class="mono" placeholder="choose a product"
+                 hx-get="/orders/{{ item.document_id }}/lines/{{ ln.line_number }}/check"
+                 hx-include="closest tr" hx-trigger="load, change, keyup changed delay:400ms"
+                 hx-target="#check_{{ ln.line_number }}">
+          <datalist id="opts_{{ ln.line_number }}">
+            {% for c in options.get(ln.line_number, []) %}<option value="{{ c.sku }}">{{ c.name }} ({{ c.unit_of_measure }} of {{ c.pack_size }})</option>{% endfor %}
+          </datalist>
+          <div class="check" id="check_{{ ln.line_number }}"></div>
+          <div class="src">suggested by {{ "investigator" if ln.source == "agent" else "catalogue match" }}{% if ln.matched_sku and ln.matched_sku != ln.sku %} · search had picked {{ ln.matched_sku }}{% endif %}</div>
+        </td>
+        <td><input type="number" min="1" step="1" name="qty_{{ ln.line_number }}" value="{{ ln.quantity or '' }}" class="qty"
+                   placeholder="?" hx-get="/orders/{{ item.document_id }}/lines/{{ ln.line_number }}/check"
+                   hx-include="closest tr" hx-trigger="change" hx-target="#check_{{ ln.line_number }}"></td>
+        <td><input type="checkbox" name="remove_{{ ln.line_number }}" aria-label="Remove line {{ ln.line_number }}"></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="actions">
+    <button class="primary" type="submit"{% if not item.customer_id %} disabled title="No customer identified: reject instead"{% endif %}>Approve and create ERP draft</button>
+    <div class="reject">
+      <input type="text" name="reason" placeholder="Reason for rejecting" form="reject-form">
+      <button class="danger" type="submit" form="reject-form">Reject</button>
+    </div>
+  </div>
+</form>
+<form id="reject-form" method="post" action="/orders/{{ item.document_id }}/reject"></form>
+{% endif %}
+
+<details hx-get="/orders/{{ item.document_id }}/history" hx-trigger="toggle once" hx-target="#history">
+  <summary>Audit trail and agent trace</summary>
+  <div id="history" class="muted small" style="margin-top:12px">Loading…</div>
+</details>
+{% endblock %}

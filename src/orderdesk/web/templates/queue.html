@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+{% if done %}<div class="flash">{{ done }}</div>{% endif %}
+<h1>Orders to review</h1>
+<p class="sub">Nothing reaches the ERP until someone here approves it.</p>
+
+{% set ready = pending | selectattr("status", "equalto", "ready_for_approval") | list %}
+<div class="grid">
+  <div class="card stat"><div class="n">{{ pending | length }}</div><div class="l">awaiting a decision</div></div>
+  <div class="card stat"><div class="n">{{ ready | length }}</div><div class="l">clean, ready to approve</div></div>
+  <div class="card stat"><div class="n">{{ pending | length - ready | length }}</div><div class="l">flagged for a closer look</div></div>
+  <div class="card stat"><div class="n">{{ recent | length }}</div><div class="l">recent decisions</div></div>
+</div>
+
+<div class="card">
+{% if pending %}
+  <table>
+    <thead><tr><th>Status</th><th>Customer</th><th>PO</th><th>Lines</th><th>Why it's here</th><th>Agent says</th></tr></thead>
+    <tbody>
+    {% for item in pending %}
+      {% set label, tone = status_label(item.status) %}
+      <tr class="link" onclick="location.href='/orders/{{ item.document_id }}'">
+        <td><span class="badge {{ tone }}">{{ label }}</span></td>
+        <td><a href="/orders/{{ item.document_id }}">{{ item.customer_name or "Unknown sender" }}</a>
+            <div class="small muted">{{ item.filename }}</div></td>
+        <td class="mono">{{ item.customer_po_number or "–" }}</td>
+        <td>{{ item.lines | length }}</td>
+        <td class="small">{% for code in item.issues | map(attribute="code") | unique %}{{ code | replace("_", " ") }}{% if not loop.last %}, {% endif %}{% else %}<span class="muted">no issues</span>{% endfor %}</td>
+        <td class="small">{{ (item.agent_action or "–") | replace("_", " ") }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p style="padding:20px" class="muted">Inbox zero. Nothing awaiting a decision.</p>
+{% endif %}
+</div>
+
+{% if recent %}
+<h2>Recent decisions</h2>
+<div class="card"><table>
+  <thead><tr><th>Decision</th><th>Customer</th><th>ERP order</th><th>Total</th><th>By</th><th>When</th></tr></thead>
+  <tbody>
+  {% for doc_id, filename, status, customer, by, erp_id, total, at in recent %}
+    {% set label, tone = status_label(status) %}
+    <tr class="link" onclick="location.href='/orders/{{ doc_id }}'">
+      <td><span class="badge {{ tone }}">{{ label }}</span></td>
+      <td>{{ customer or "Unknown sender" }}<div class="small muted">{{ filename }}</div></td>
+      <td class="mono">{{ erp_id or "–" }}</td>
+      <td>{% if total %}£{{ total }}{% else %}–{% endif %}</td>
+      <td class="small">{{ by }}</td>
+      <td class="small muted">{{ at.strftime("%d %b %H:%M") }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% endif %}
+{% endblock %}

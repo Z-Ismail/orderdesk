@@ -1,0 +1,4 @@
+{% if problem %}<span class="bad">⚠ {{ problem }}</span>{% if info %} · {% endif %}{% endif %}
+{% if info %}<span class="ok">{{ info.product.name }}</span>
+  <span class="muted">· {{ info.product.unit_of_measure }} of {{ info.product.pack_size }}
+  {% if info.price %}· £{{ info.price.unit_price }}{% endif %} · {{ info.stock }} in stock</span>{% endif %}

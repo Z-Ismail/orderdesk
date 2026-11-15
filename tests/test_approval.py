@@ -213,3 +213,44 @@ def test_missing_suggestions_must_be_filled_in(service, db):
     )
     with pytest.raises(ApprovalError, match="no suggested product"):
         service.approve(target, REVIEWER)
+
+
+def test_an_agent_fix_approved_as_is_is_also_learned(service, db, embedder):
+    """The agent corrected the match and the human accepted: no human 'correction', but the
+    system should still learn, so next time search gets it right without the agent."""
+    target = doc_id(db, "email_004")
+    item = service.review(target)
+    line4 = next(ln for ln in item.lines if ln.line_number == 4)
+    agent_pick = "HH-CUT-WD-F" if line4.matched_sku == "HH-CUT-WD-K" else "HH-CUT-WD-K"
+    findings = {
+        "recommended_action": "approve_with_suggestions",
+        "customer_id": "C004",
+        "summary": "fix",
+        "risk_flags": [],
+        "lines": [
+            {
+                "line_number": 4,
+                "recommended_sku": agent_pick,
+                "recommended_quantity": 1,
+                "confidence": "high",
+                "reasoning": "x",
+            }
+        ],
+    }
+    db.execute(
+        "INSERT INTO investigations (document_id, findings, transcript, steps, cost_usd, "
+        "model) VALUES (%s, %s, '[]', 1, 0, 'test')",
+        (target, Jsonb(findings)),
+    )
+    item = service.review(target)
+    final = [
+        FinalLine(line_number=ln.line_number, sku=ln.sku, quantity=ln.quantity or 1)
+        for ln in item.lines
+    ]
+    service.approve(target, REVIEWER, final)
+
+    learned = db.execute(
+        "SELECT customer_text, sku FROM customer_aliases "
+        "WHERE source = 'learned' AND customer_id = 'C004'"
+    ).fetchall()
+    assert ("Wooden knives", agent_pick) in learned

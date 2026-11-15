@@ -1,0 +1,9 @@
+{% if raw %}
+<pre>{% if raw.subject %}Subject: {{ raw.subject }}
+From: {{ raw.sender }}
+
+{% endif %}{% if raw.needs_ocr %}[Scanned document: no text layer. Claude read it as an image.]{% else %}{{ raw.text }}{% for a in raw.attachments %}
+
+--- attachment: {{ a.filename }} ---
+{{ a.text }}{% endfor %}{% endif %}</pre>
+{% endif %}
