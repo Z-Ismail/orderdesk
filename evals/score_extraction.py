@@ -102,7 +102,7 @@ def main() -> int:
     parser.add_argument("--golden", type=Path, default=ROOT / "sample_data" / "golden")
     parser.add_argument("--threshold", type=float, default=0.95)
     # Documents we expect to have no text output yet (scans wait for the vision model).
-    parser.add_argument("--allow-missing", nargs="*", default=["po_1005_exe_valley_scanned"])
+    parser.add_argument("--allow-missing", nargs="*", default=[])
     args = parser.parse_args()
 
     grand_correct = grand_total = 0
@@ -111,7 +111,7 @@ def main() -> int:
         out_path = args.outputs / gold_path.name
         if not out_path.exists():
             if gold_path.stem in args.allow_missing:
-                print(f"    --  {gold_path.stem:<40} no output (expected: needs OCR)")
+                print(f"    --  {gold_path.stem:<40} no output (allowed to be missing)")
                 continue
             # A missing result counts as every field wrong: silence is not success.
             missing_total = len(HEADER_RULES) + 1 + len(gold.lines) * len(LINE_RULES)

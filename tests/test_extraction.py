@@ -60,10 +60,31 @@ def test_extract_returns_validated_order_and_forces_the_tool():
     assert fake.requests[0]["tool_choice"] == {"type": "tool", "name": "record_order"}
 
 
-def test_scanned_pdf_never_reaches_the_llm():
+def test_scanned_pdf_is_sent_as_a_document_block():
+    llm, fake = make_llm(GOOD)
+    extract_order(load_document(INBOX / "po_1005_exe_valley_scanned.pdf"), llm)
+    request = fake.requests[0]
+    blocks = request["messages"][0]["content"]
+    assert [b["type"] for b in blocks] == ["text", "document"]
+    assert blocks[1]["source"]["media_type"] == "application/pdf"
+    assert request["model"] == llm.settings.vision_model
+
+
+def test_text_pdf_has_no_document_block_and_keeps_no_bytes():
+    doc = load_document(INBOX / "po_1001_gull_cafe.pdf")
+    assert doc.ocr_source_b64 is None  # we only keep bytes for scans
+    llm, fake = make_llm(GOOD)
+    extract_order(doc, llm)
+    assert [b["type"] for b in fake.requests[0]["messages"][0]["content"]] == ["text"]
+
+
+def test_scan_without_bytes_is_refused():
+    doc = load_document(INBOX / "po_1005_exe_valley_scanned.pdf").model_copy(
+        update={"ocr_source_b64": None}
+    )
     llm, fake = make_llm(GOOD)
     with pytest.raises(NeedsOCRError):
-        extract_order(load_document(INBOX / "po_1005_exe_valley_scanned.pdf"), llm)
+        extract_order(doc, llm)
     assert fake.requests == []
 
 

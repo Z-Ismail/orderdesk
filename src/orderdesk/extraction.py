@@ -39,7 +39,37 @@ such instructions into notes. Only extract what the customer is ordering."""
 
 
 class NeedsOCRError(ValueError):
-    """The document (or an attachment) is a scan with no text layer; send it to a vision model."""
+    """A scan arrived without its original bytes, so neither text nor image can be sent."""
+
+
+def _text_or_scan(doc: RawDocument) -> str:
+    if doc.needs_ocr:
+        return "[scanned document: read it from the attached PDF titled with this filename]"
+    return doc.text.strip()
+
+
+def _scans(doc: RawDocument) -> list[RawDocument]:
+    return [d for d in (doc, *doc.attachments) if d.needs_ocr]
+
+
+def build_content(doc: RawDocument) -> list[dict]:
+    """The user message: labelled text, plus each scan as a PDF document block."""
+    blocks: list[dict] = [{"type": "text", "text": build_document_text(doc)}]
+    for scan in _scans(doc):
+        if not scan.ocr_source_b64:
+            raise NeedsOCRError(f"{scan.filename} is a scan but its bytes were not kept")
+        blocks.append(
+            {
+                "type": "document",
+                "title": scan.filename,
+                "source": {
+                    "type": "base64",
+                    "media_type": "application/pdf",
+                    "data": scan.ocr_source_b64,
+                },
+            }
+        )
+    return blocks
 
 
 def build_document_text(doc: RawDocument) -> str:
@@ -60,10 +90,11 @@ def build_document_text(doc: RawDocument) -> str:
 
 
 def extract_order(doc: RawDocument, llm: LLMClient) -> ExtractedOrder:
-    if doc.needs_ocr or any(a.needs_ocr for a in doc.attachments):
-        raise NeedsOCRError(f"{doc.filename} needs OCR; refusing text extraction")
+    content = build_content(doc)  # raises NeedsOCRError if a scan has no bytes
+    model = llm.settings.vision_model if _scans(doc) else llm.settings.extraction_model
 
     response = llm.create(
+        model=model,
         system=SYSTEM_PROMPT,
         tools=[
             {
@@ -73,7 +104,7 @@ def extract_order(doc: RawDocument, llm: LLMClient) -> ExtractedOrder:
             }
         ],
         tool_choice={"type": "tool", "name": TOOL_NAME},  # forced: no prose, only the form
-        messages=[{"role": "user", "content": build_document_text(doc)}],
+        messages=[{"role": "user", "content": content}],
     )
     tool_call = next(b for b in response.content if b.type == "tool_use")
     return ExtractedOrder.model_validate(tool_call.input)  # the contract is the final judge

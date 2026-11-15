@@ -112,3 +112,5 @@ class RawDocument(BaseModel):
     received_at: datetime | None = None
     message_id: str | None = None
     attachments: list["RawDocument"] = Field(default_factory=list)
+    # Only for scans: the original PDF (base64) so a vision model can read the page images.
+    ocr_source_b64: str | None = Field(default=None, repr=False)
