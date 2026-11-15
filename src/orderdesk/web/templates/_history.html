@@ -7,6 +7,19 @@
   {% endfor %}
   </tbody>
 </table>
+{% if calls %}
+  <h2>LLM calls · {{ calls | length }} · ${{ "%.4f" | format(calls | sum(attribute=5)) }}</h2>
+  <table class="card" style="background:#fff">
+    <thead><tr><th>When</th><th>Purpose</th><th>Model</th><th>Tokens in / out</th><th>Cost</th><th>Time</th></tr></thead>
+    <tbody>
+    {% for at, purpose, model, tin, tout, cost, ms, err in calls %}
+      <tr><td class="small">{{ at.strftime("%H:%M:%S") }}</td><td>{{ purpose }}</td><td class="small">{{ model }}</td>
+          <td class="small">{{ tin }} / {{ tout }}</td><td class="small">${{ "%.4f" | format(cost) }}</td>
+          <td class="small">{{ ms }} ms{% if err %} <span class="badge bad">error</span>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 {% if investigation %}
   {% set transcript, steps, cost, model = investigation %}
   <h2>Agent trace · {{ steps }} steps · ${{ "%.4f" | format(cost) }} · {{ model }}</h2>

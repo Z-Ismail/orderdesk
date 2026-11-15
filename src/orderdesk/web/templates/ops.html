@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Ops · orderdesk{% endblock %}
+{% block content %}
+<h1>Operations</h1>
+<p class="sub">What the AI is costing, how fast it is, and how often humans had to correct it.</p>
+
+{% set approved, corrected = corrections %}
+{% set total_cost = by_purpose | sum(attribute=3) %}
+{% set total_calls = by_purpose | sum(attribute=2) %}
+<div class="grid">
+  <div class="card stat"><div class="n">{{ total_calls }}</div><div class="l">LLM calls</div></div>
+  <div class="card stat"><div class="n">${{ "%.4f" | format(total_cost or 0) }}</div><div class="l">total LLM spend</div></div>
+  <div class="card stat"><div class="n">{{ approved }}</div><div class="l">orders approved</div></div>
+  <div class="card stat"><div class="n">{% if approved %}{{ ((approved - corrected) / approved * 100) | round | int }}%{% else %}–{% endif %}</div><div class="l">approved without corrections</div></div>
+</div>
+
+<h2>By purpose</h2>
+<div class="card"><table>
+  <thead><tr><th>Purpose</th><th>Model</th><th>Calls</th><th>Cost</th><th>Avg time</th><th>p95 time</th><th>Errors</th></tr></thead>
+  <tbody>
+  {% for purpose, model, calls, cost, avg_ms, p95_ms, errors in by_purpose %}
+    <tr><td><b>{{ purpose }}</b></td><td class="small">{{ model }}</td><td>{{ calls }}</td>
+        <td>${{ "%.4f" | format(cost) }}</td><td>{{ avg_ms }} ms</td><td>{{ p95_ms }} ms</td>
+        <td>{% if errors %}<span class="badge bad">{{ errors }}</span>{% else %}0{% endif %}</td></tr>
+  {% else %}
+    <tr><td colspan="7" class="muted">No LLM calls recorded yet. Run the pipeline.</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+
+<h2>Documents by status</h2>
+<div class="card"><table>
+  <tbody>{% for status, n in outcomes %}{% set label, tone = status_label(status) %}
+    <tr><td><span class="badge {{ tone }}">{{ label }}</span></td><td>{{ n }}</td></tr>{% endfor %}</tbody>
+</table></div>
+
+<h2>Daily spend</h2>
+<div class="card"><table>
+  <thead><tr><th>Day</th><th>Calls</th><th>Cost</th></tr></thead>
+  <tbody>{% for day, calls, cost in by_day %}
+    <tr><td>{{ day.strftime("%a %d %b") }}</td><td>{{ calls }}</td><td>${{ "%.4f" | format(cost) }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

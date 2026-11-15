@@ -350,6 +350,8 @@ class Investigator:
 
         for step in range(1, self.max_steps + 1):
             response = self.llm.create(
+                purpose="agent",
+                document_id=document_id,
                 model=self.model,
                 system=SYSTEM_PROMPT,
                 tools=TOOLS,
@@ -458,7 +460,9 @@ def main() -> None:
     from orderdesk.erp_client import HttpERPClient
 
     settings = get_settings()
-    llm = LLMClient(settings)
+    from orderdesk.tracing import PostgresRecorder
+
+    llm = LLMClient(settings, recorder=PostgresRecorder(settings.database_url))
     erp = HttpERPClient(settings.erp_base_url, settings.erp_read_key.get_secret_value())
     with connect(settings.database_url) as conn:
         migrate(conn)

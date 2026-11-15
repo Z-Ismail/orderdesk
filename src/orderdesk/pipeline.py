@@ -315,7 +315,9 @@ def main() -> None:
 
     settings = get_settings()
     folder = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("sample_data/inbox")
-    llm = LLMClient(settings)
+    from orderdesk.tracing import PostgresRecorder
+
+    llm = LLMClient(settings, recorder=PostgresRecorder(settings.database_url))
     erp = HttpERPClient(settings.erp_base_url, settings.erp_read_key.get_secret_value())
     with connect(settings.database_url) as conn:
         migrate(conn)

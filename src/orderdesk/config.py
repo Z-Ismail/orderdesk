@@ -26,8 +26,9 @@ class Settings(BaseSettings):
     match_min_similarity: float = 0.75
     match_min_margin: float = 0.02
 
-    # Until real login arrives (milestone 7), the web UI records decisions under this name.
-    reviewer_email: str = "reviewer@orderdesk.local"
+    # Web login. Set SECURE_COOKIES=true when served over HTTPS (always, in production).
+    session_hours: int = 12
+    secure_cookies: bool = False
 
     erp_base_url: str = "http://localhost:8100"
     # Two keys on purpose: the agent only ever gets the read key (least privilege).

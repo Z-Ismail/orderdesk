@@ -58,13 +58,22 @@
     .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
     .stat { padding: 14px 16px; } .stat .n { font-size: 26px; font-weight: 700; } .stat .l { color: var(--muted); font-size: 13px; }
     .code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+    .nav { display: flex; align-items: center; gap: 18px; font-size: 14px; } .nav a { text-decoration: none; font-weight: 500; }
+    .nav form { margin: 0; } .link-btn { background: none; padding: 0; color: var(--muted); font-weight: 500; }
+    .link-btn:hover { color: var(--ink); }
     .src { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   </style>
 </head>
 <body>
   <header><div class="wrap">
     <a class="brand" href="/">order<span>desk</span></a>
-    <span class="who">Reviewing as {{ reviewer }}</span>
+    {% if user %}
+    <nav class="nav">
+      <a href="/">Queue</a><a href="/ops">Ops</a>
+      <span class="who">{{ user.email }}</span>
+      <form method="post" action="/logout"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn" type="submit">Log out</button></form>
+    </nav>
+    {% endif %}
   </div></header>
   <main><div class="wrap">{% block content %}{% endblock %}</div></main>
 </body>

@@ -19,7 +19,7 @@
     <tbody>
     {% for item in pending %}
       {% set label, tone = status_label(item.status) %}
-      <tr class="link" onclick="location.href='/orders/{{ item.document_id }}'">
+      <tr>
         <td><span class="badge {{ tone }}">{{ label }}</span></td>
         <td><a href="/orders/{{ item.document_id }}">{{ item.customer_name or "Unknown sender" }}</a>
             <div class="small muted">{{ item.filename }}</div></td>
@@ -43,9 +43,9 @@
   <tbody>
   {% for doc_id, filename, status, customer, by, erp_id, total, at in recent %}
     {% set label, tone = status_label(status) %}
-    <tr class="link" onclick="location.href='/orders/{{ doc_id }}'">
+    <tr>
       <td><span class="badge {{ tone }}">{{ label }}</span></td>
-      <td>{{ customer or "Unknown sender" }}<div class="small muted">{{ filename }}</div></td>
+      <td><a href="/orders/{{ doc_id }}">{{ customer or "Unknown sender" }}</a><div class="small muted">{{ filename }}</div></td>
       <td class="mono">{{ erp_id or "–" }}</td>
       <td>{% if total %}£{{ total }}{% else %}–{% endif %}</td>
       <td class="small">{{ by }}</td>

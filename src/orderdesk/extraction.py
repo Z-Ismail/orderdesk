@@ -91,9 +91,12 @@ def build_document_text(doc: RawDocument) -> str:
 
 def extract_order(doc: RawDocument, llm: LLMClient) -> ExtractedOrder:
     content = build_content(doc)  # raises NeedsOCRError if a scan has no bytes
-    model = llm.settings.vision_model if _scans(doc) else llm.settings.extraction_model
+    has_scans = bool(_scans(doc))
+    model = llm.settings.vision_model if has_scans else llm.settings.extraction_model
 
     response = llm.create(
+        purpose="vision" if has_scans else "extraction",
+        document_id=doc.document_id,
         model=model,
         system=SYSTEM_PROMPT,
         tools=[

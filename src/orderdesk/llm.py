@@ -1,5 +1,7 @@
 """The only place the app talks to an LLM. Every call goes through a budget check."""
 
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -41,9 +43,30 @@ class Budget:
         return cost
 
 
+@dataclass(frozen=True)
+class CallRecord:
+    """One LLM call, successful or not. What tracing stores."""
+
+    purpose: str
+    document_id: str | None
+    model: str
+    input_tokens: int
+    output_tokens: int
+    cost_usd: float
+    latency_ms: int
+    stop_reason: str | None
+    error: str | None
+
+
+Recorder = Callable[[CallRecord], None]
+
+
 class LLMClient:
-    def __init__(self, settings: Settings, client: Any = None) -> None:
+    def __init__(
+        self, settings: Settings, client: Any = None, recorder: Recorder | None = None
+    ) -> None:
         self.settings = settings
+        self.recorder = recorder
         self.budget = Budget(settings.max_calls_per_run, settings.max_cost_usd_per_run)
         self._client = client or anthropic.Anthropic(
             api_key=settings.anthropic_api_key.get_secret_value(),
@@ -51,7 +74,10 @@ class LLMClient:
             timeout=60.0,  # never hang forever
         )
 
-    def create(self, **kwargs: Any) -> Any:
+    def create(
+        self, *, purpose: str = "unspecified", document_id: str | None = None, **kwargs: Any
+    ) -> Any:
+        """Call the Messages API. `purpose` and `document_id` are for tracing only."""
         model = kwargs.setdefault("model", self.settings.extraction_model)
         if model not in PRICES_PER_MTOK:
             # fail closed: an unpriced model can't be budgeted, so it can't be called
@@ -60,6 +86,52 @@ class LLMClient:
         kwargs["max_tokens"] = min(requested, self.settings.max_output_tokens)
 
         self.budget.check()
-        response = self._client.messages.create(**kwargs)
-        self.budget.record(model, response.usage.input_tokens, response.usage.output_tokens)
+        started = time.perf_counter()
+        try:
+            response = self._client.messages.create(**kwargs)
+        except Exception as exc:
+            self._trace(purpose, document_id, model, started, error=repr(exc))
+            raise
+        usage = response.usage
+        cost = self.budget.record(model, usage.input_tokens, usage.output_tokens)
+        self._trace(
+            purpose,
+            document_id,
+            model,
+            started,
+            usage.input_tokens,
+            usage.output_tokens,
+            cost,
+            getattr(response, "stop_reason", None),
+        )
         return response
+
+    def _trace(
+        self,
+        purpose,
+        document_id,
+        model,
+        started,
+        input_tokens=0,
+        output_tokens=0,
+        cost=0.0,
+        stop_reason=None,
+        error=None,
+    ) -> None:
+        if self.recorder is None:
+            return
+        record = CallRecord(
+            purpose,
+            document_id,
+            model,
+            input_tokens,
+            output_tokens,
+            cost,
+            int((time.perf_counter() - started) * 1000),
+            stop_reason,
+            error,
+        )
+        try:
+            self.recorder(record)
+        except Exception:  # noqa: BLE001, S110 - tracing must never break the real work
+            pass
